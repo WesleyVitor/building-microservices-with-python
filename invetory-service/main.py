@@ -1,21 +1,36 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from serializers import ProductAllOut, ProductIn
 from repository.productRepository import ProductRepository
-from mongoengine.queryset.queryset import QuerySet, BaseQuerySet
+from mongoengine.queryset.queryset import QuerySet
+from utils.id_validation import PyObjectId
 app = FastAPI()
 app.add_middleware(CORSMiddleware)
-
 
 @app.get("/")
 async def index():
     productRepository:ProductRepository = ProductRepository()
     products:QuerySet = productRepository.get_all_products()
-    return {"products":[ProductAllOut(name=product['name']) for product in products.as_pymongo()]}
+    return {"products":[ProductAllOut(name=product['name'], description=product['description']) for product in products.as_pymongo()]}
+   
+    
 
 @app.post("/")
 async def create(product:ProductIn):
     productRepository:ProductRepository = ProductRepository()
-    product = productRepository.create_product(product)
-    return {"msg":"OK"}
+    try:
+        product = productRepository.create_product(product)
+        return JSONResponse({"msg":"Tudo OK!"}, status.HTTP_201_CREATED)
+    except:
+        return JSONResponse({"msg":"Alguma coisa deu errado!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@app.delete("/{objectID}")
+async def deletar(objectID: PyObjectId):
+    productRepository:ProductRepository = ProductRepository()
+    try:
+        productRepository.delete_one_product(objectID)
+        return JSONResponse({"msg":"Tudo OK!"}, status.HTTP_200_OK)
+    except:
+        return JSONResponse({"msg":"Alguma coisa deu errado!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)

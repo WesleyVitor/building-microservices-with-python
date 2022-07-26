@@ -11,3 +11,8 @@ class ProductRepository:
         product:Product = Product(name=product.name, price=product.price, description=product.description)
         product.save()
         return product
+    
+    def delete_one_product(self, id):
+        """ Delete one product """
+        product = Product.objects(id=id).as_pymongo()
+        product.delete()

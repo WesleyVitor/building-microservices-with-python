@@ -35,7 +35,7 @@ async def deletar(objectID: PyObjectId):
     except:
         return JSONResponse({"msg":"Alguma coisa deu errado!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@app.get("/{objectID}")
+@app.get("/products/{objectID}")
 async def show(objectID:PyObjectId):
     productRepository:ProductRepository = ProductRepository()
     product:QuerySet = productRepository.get_one_product(objectID)

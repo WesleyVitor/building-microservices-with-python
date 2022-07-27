@@ -16,3 +16,7 @@ class ProductRepository:
         """ Delete one product """
         product = Product.objects(id=id).as_pymongo()
         product.delete()
+
+    def get_one_product(self, id):
+        """ Return one product """
+        return Product.objects(id=id).as_pymongo().first()

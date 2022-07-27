@@ -2,11 +2,11 @@
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from serializers import ProductAllOut, ProductIn, ProductOut
+from serializers import ProductAllOut, ProductIn, ProductOut, ProductUpdate
 from repository.productRepository import ProductRepository
 from mongoengine.queryset.queryset import QuerySet
 from utils.id_validation import PyObjectId
-from bson.objectid import ObjectId
+
 app = FastAPI()
 app.add_middleware(CORSMiddleware)
 
@@ -39,5 +39,15 @@ async def deletar(objectID: PyObjectId):
 async def show(objectID:PyObjectId):
     productRepository:ProductRepository = ProductRepository()
     product:QuerySet = productRepository.get_one_product(objectID)
-    print(product)
+    
     return {"product":ProductOut(name=product['name'], description=product['description'], price=product['price'])}
+
+@app.patch("/{objectID}")
+async def update(objectID:PyObjectId, product: ProductUpdate):
+    productRepository:ProductRepository = ProductRepository()
+       
+    try:
+        productRepository.update_one_product(objectID, product)
+        return JSONResponse({"msg":"Tudo OK!"}, status.HTTP_200_OK)
+    except:
+        return JSONResponse({"msg":"Alguma coisa deu errado!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)

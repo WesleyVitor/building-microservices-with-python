@@ -1,5 +1,5 @@
 from models import Product
-
+from mongoengine.queryset.queryset import QuerySet
 class ProductRepository:
 
     def get_all_products(self):
@@ -20,3 +20,9 @@ class ProductRepository:
     def get_one_product(self, id):
         """ Return one product """
         return Product.objects(id=id).as_pymongo().first()
+    
+    def update_one_product(self, id, product_new):
+        """ Atualiza as informações de um produto"""
+        product:QuerySet = Product.objects(id=id).as_pymongo()
+        
+        product.update(name=product_new.name, description=product_new.description, price=product_new.price)

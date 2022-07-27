@@ -15,3 +15,8 @@ class ProductOut(BaseModel):
     name:str
     description:str
     price:str
+
+class ProductUpdate(BaseModel):
+    name:str
+    description:str
+    price:str
